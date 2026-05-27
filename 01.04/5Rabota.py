@@ -204,12 +204,25 @@ class TravelApp:
             return False, 'Нужен спецсимвол (!@#$%^&*)'
         return True, 'OK'
     
+
+
     def validate_email(self, email):
         # Стандартная валидация email
-        # ПРИМЕЧАНИЕ: Требование про "admin" в домене является ошибочным
         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return re.match(pattern, email) is not None
-    
+        
+        if not re.match(pattern, email):
+            return False
+        
+        # Проверка на наличие "admin" в любой части email (по заданию)
+        # Извлекаем доменную часть (то, что после @)
+        if '@' in email:
+            domain_part = email.split('@')[1]  # часть после @
+            # Проверяем, содержит ли домен "admin" в любом регистре
+            if re.search(r'admin', domain_part, re.IGNORECASE):
+                return False
+        
+        return True
+
     def register(self):
         login = self.reg_entries['login'].get()
         password = self.reg_entries['pass1'].get()
